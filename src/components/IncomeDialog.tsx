@@ -7,12 +7,41 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus } from "lucide-react";
+import { Plus, UserPlus } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useState } from "react";
 
 export function IncomeDialog() {
+  const [selectedClient, setSelectedClient] = useState<string>("");
+  const [newClientName, setNewClientName] = useState("");
+  const [clients, setClients] = useState([
+    "Marcelo",
+    "Cristina",
+  ]);
+
+  const handleAddClient = () => {
+    if (newClientName.trim()) {
+      setClients([...clients, newClientName.trim()]);
+      setSelectedClient(newClientName.trim());
+      setNewClientName("");
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -77,7 +106,55 @@ export function IncomeDialog() {
                 <Label htmlFor="client" className="text-sm font-medium">
                   Cliente
                 </Label>
-                <Input id="client" className="border-slate-200" />
+                <div className="flex gap-2">
+                  <Select value={selectedClient} onValueChange={setSelectedClient}>
+                    <SelectTrigger className="w-full border-slate-200">
+                      <SelectValue placeholder="Selecione um cliente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {clients.map((client) => (
+                          <SelectItem key={client} value={client}>
+                            {client}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="shrink-0">
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Novo Cliente
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                      <div className="grid gap-4">
+                        <div className="space-y-2">
+                          <h4 className="font-medium leading-none">Novo Cliente</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Adicione um novo cliente à sua lista
+                          </p>
+                        </div>
+                        <div className="grid gap-2">
+                          <div className="grid grid-cols-3 items-center gap-4">
+                            <Label htmlFor="newClient">Nome</Label>
+                            <Input
+                              id="newClient"
+                              value={newClientName}
+                              onChange={(e) => setNewClientName(e.target.value)}
+                              className="col-span-2"
+                            />
+                          </div>
+                        </div>
+                        <Button onClick={handleAddClient}>
+                          Adicionar Cliente
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </div>
             
