@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 export function IncomeDialog() {
   return (
@@ -23,34 +24,69 @@ export function IncomeDialog() {
           </div>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Nova Receita</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="date">Data</Label>
-            <Input id="date" type="date" />
+      <DialogContent className="sm:max-w-[800px] p-0 gap-0">
+        <div className="flex">
+          <div className="w-1/3 bg-emerald-500 text-white p-8 rounded-l-lg">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-semibold mb-4">Nova Receita</DialogTitle>
+              <p className="text-sm opacity-90">
+                Registre suas entradas financeiras de forma simples e organizada
+              </p>
+            </DialogHeader>
+            <div className="mt-8">
+              <Card className="bg-white/10 border-white/20 p-4 rounded-lg">
+                <p className="text-sm font-medium">Dica</p>
+                <p className="text-xs opacity-80 mt-1">
+                  Categorizar suas receitas ajuda a ter um melhor controle financeiro
+                </p>
+              </Card>
+            </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="category">Categoria</Label>
-            <Input id="category" />
+          
+          <div className="w-2/3 p-8">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="date" className="text-sm font-medium">
+                  Data
+                </Label>
+                <Input id="date" type="date" className="border-slate-200" />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="category" className="text-sm font-medium">
+                  Categoria
+                </Label>
+                <Input id="category" className="border-slate-200" />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="payment" className="text-sm font-medium">
+                  Forma de Pagamento
+                </Label>
+                <Input id="payment" className="border-slate-200" />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="amount" className="text-sm font-medium">
+                  Valor Total
+                </Label>
+                <Input id="amount" type="number" className="border-slate-200" />
+              </div>
+              
+              <div className="col-span-2 space-y-2">
+                <Label htmlFor="client" className="text-sm font-medium">
+                  Cliente
+                </Label>
+                <Input id="client" className="border-slate-200" />
+              </div>
+            </div>
+            
+            <div className="flex justify-end mt-8">
+              <Button type="submit" className="bg-emerald-500 hover:bg-emerald-600">
+                Salvar
+              </Button>
+            </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="payment">Forma de Pagamento</Label>
-            <Input id="payment" />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="amount">Valor Total</Label>
-            <Input id="amount" type="number" />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="client">Cliente</Label>
-            <Input id="client" />
-          </div>
-        </div>
-        <div className="flex justify-end">
-          <Button type="submit">Salvar</Button>
         </div>
       </DialogContent>
     </Dialog>
