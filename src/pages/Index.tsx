@@ -1,5 +1,6 @@
 
 import { IncomeDialog } from "@/components/IncomeDialog";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   return (
