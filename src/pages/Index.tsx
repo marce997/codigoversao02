@@ -1,5 +1,6 @@
 
 import { IncomeDialog } from "@/components/IncomeDialog";
+import { ExpenseDialog } from "@/components/ExpenseDialog";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -13,21 +14,7 @@ const Index = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <IncomeDialog />
-          <Button variant="outline" className="w-full h-32 bg-white hover:bg-slate-50 p-6 flex flex-col items-center gap-2">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="h-8 w-8 text-red-500"
-            >
-              <path d="M5 12h14" />
-            </svg>
-            <div className="flex flex-col items-center">
-              <span className="text-xl font-medium">Despesa</span>
-              <span className="text-sm text-slate-500">Registrar saída</span>
-            </div>
-          </Button>
+          <ExpenseDialog />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

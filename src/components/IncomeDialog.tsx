@@ -57,6 +57,8 @@ const IncomeDialog = () => {
     address: "",
     additionalInfo: "",
   });
+  
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   // Calculate installment value whenever amount or installments change
   useEffect(() => {
@@ -87,6 +89,7 @@ const IncomeDialog = () => {
         address: "",
         additionalInfo: "",
       });
+      setIsPopoverOpen(false);
     }
   };
 
@@ -106,6 +109,11 @@ const IncomeDialog = () => {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
     setAmount(value ? formatCurrency(value) : "");
+  };
+
+  const handleInstallmentValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "");
+    setInstallmentValue(value ? formatCurrency(value) : "");
   };
 
   return (
@@ -129,7 +137,7 @@ const IncomeDialog = () => {
               </p>
             </DialogHeader>
             <div className="mt-8">
-              <Card className="bg-[#F2FCE2] border-white/20 p-4 rounded-lg">
+              <Card className="bg-[#F2FFE8] border-white/20 p-4 rounded-lg">
                 <div className="flex items-start gap-2">
                   <Info className="h-4 w-4 mt-0.5 shrink-0 text-[#1A1F2C]" />
                   <div>
@@ -178,7 +186,7 @@ const IncomeDialog = () => {
                   <SelectTrigger className="w-full border-slate-200">
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper" className="max-h-[300px] overflow-y-auto">
                     <SelectGroup>
                       <SelectItem value="products">Venda de Produtos</SelectItem>
                       <SelectItem value="services">Prestação de Serviços</SelectItem>
@@ -197,7 +205,7 @@ const IncomeDialog = () => {
                   <SelectTrigger className="w-full border-slate-200">
                     <SelectValue placeholder="Selecione o método" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper">
                     <SelectGroup>
                       <SelectItem value="pix">
                         <div className="flex items-center gap-2">
@@ -242,13 +250,11 @@ const IncomeDialog = () => {
                       <SelectTrigger className="w-full border-slate-200">
                         <SelectValue placeholder="Número de parcelas" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="1">À vista</SelectItem>
-                          {[2,3,4,5,6,7,8,9,10,11,12].map((n) => (
-                            <SelectItem key={n} value={n.toString()}>{n}x</SelectItem>
-                          ))}
-                        </SelectGroup>
+                      <SelectContent position="popper" className="max-h-[200px] overflow-y-auto">
+                        <SelectItem value="1">À vista</SelectItem>
+                        {[2,3,4,5,6,7,8,9,10,11,12].map((n) => (
+                          <SelectItem key={n} value={n.toString()}>{n}x</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -259,8 +265,9 @@ const IncomeDialog = () => {
                       <Input
                         id="installmentValue"
                         value={installmentValue}
-                        readOnly
-                        className="border-slate-200 bg-slate-50"
+                        onChange={handleInstallmentValueChange}
+                        className="border-slate-200"
+                        placeholder="R$ 0,00"
                       />
                     </div>
                   )}
@@ -274,7 +281,7 @@ const IncomeDialog = () => {
                     <SelectTrigger className="w-full border-slate-200">
                       <SelectValue placeholder="Selecione um cliente" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent position="popper">
                       <SelectGroup>
                         {clients.map((client) => (
                           <SelectItem key={client.id} value={client.id}>
@@ -285,14 +292,14 @@ const IncomeDialog = () => {
                     </SelectContent>
                   </Select>
                   
-                  <Popover>
+                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="shrink-0">
                         <UserPlus className="h-4 w-4 mr-2" />
                         Novo Cliente
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80 p-4">
+                    <PopoverContent className="w-96 p-4" align="center" side="bottom">
                       <div className="space-y-4">
                         <div className="space-y-2">
                           <h4 className="font-medium leading-none text-lg">Novo Cliente</h4>
