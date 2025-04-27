@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, UserPlus, Info, Zap, CreditCard, Banknote, DollarSign, ArrowUpDown } from "lucide-react";
+import { Minus, UserPlus, Info, Zap, CreditCard, Banknote, DollarSign, ArrowUpDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
   Popover,
@@ -28,31 +28,31 @@ import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
-interface Client {
+interface Supplier {
   id: string;
   name: string;
-  cpf: string;
+  cnpj: string;
   phone: string;
   address: string;
   additionalInfo: string;
 }
 
-const IncomeDialog = () => {
-  const [selectedClient, setSelectedClient] = useState<string>("");
-  const [isFutureRevenue, setIsFutureRevenue] = useState(false);
+const ExpenseDialog = () => {
+  const [selectedSupplier, setSelectedSupplier] = useState<string>("");
+  const [isFutureExpense, setIsFutureExpense] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [installments, setInstallments] = useState<number>(1);
   const [installmentValue, setInstallmentValue] = useState<string>("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
-  const [clients, setClients] = useState<Client[]>([
-    { id: "1", name: "Marcelo", cpf: "", phone: "", address: "", additionalInfo: "" },
-    { id: "2", name: "Cristina", cpf: "", phone: "", address: "", additionalInfo: "" },
+  const [suppliers, setSuppliers] = useState<Supplier[]>([
+    { id: "1", name: "Uber", cnpj: "", phone: "", address: "", additionalInfo: "" },
+    { id: "2", name: "Fornecedor XYZ", cnpj: "", phone: "", address: "", additionalInfo: "" },
   ]);
 
-  const [newClient, setNewClient] = useState<Omit<Client, "id">>({
+  const [newSupplier, setNewSupplier] = useState<Omit<Supplier, "id">>({
     name: "",
-    cpf: "",
+    cnpj: "",
     phone: "",
     address: "",
     additionalInfo: "",
@@ -71,18 +71,18 @@ const IncomeDialog = () => {
     }
   }, [amount, installments]);
 
-  const handleAddClient = () => {
-    if (newClient.name.trim()) {
-      const newId = (clients.length + 1).toString();
-      const clientToAdd = {
+  const handleAddSupplier = () => {
+    if (newSupplier.name.trim()) {
+      const newId = (suppliers.length + 1).toString();
+      const supplierToAdd = {
         id: newId,
-        ...newClient
+        ...newSupplier
       };
-      setClients([...clients, clientToAdd]);
-      setSelectedClient(newId);
-      setNewClient({
+      setSuppliers([...suppliers, supplierToAdd]);
+      setSelectedSupplier(newId);
+      setNewSupplier({
         name: "",
-        cpf: "",
+        cnpj: "",
         phone: "",
         address: "",
         additionalInfo: "",
@@ -91,7 +91,7 @@ const IncomeDialog = () => {
   };
 
   const handleLaunch = () => {
-    toast.success("Receita lançada com sucesso!");
+    toast.success("Despesa lançada com sucesso!");
   };
 
   const formatCurrency = (value: string) => {
@@ -111,21 +111,21 @@ const IncomeDialog = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="w-full h-32 bg-emerald-500 hover:bg-emerald-600 p-6 flex flex-col items-center gap-2">
-          <Plus className="h-8 w-8" />
+        <Button className="w-full h-32 bg-red-500 hover:bg-red-600 p-6 flex flex-col items-center gap-2">
+          <Minus className="h-8 w-8" />
           <div className="flex flex-col items-center">
-            <span className="text-xl font-medium">Receita</span>
-            <span className="text-sm opacity-90">Registrar entrada</span>
+            <span className="text-xl font-medium">Despesa</span>
+            <span className="text-sm opacity-90">Registrar saída</span>
           </div>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] p-0 gap-0">
         <div className="flex flex-col md:flex-row">
-          <div className="w-full md:w-1/3 bg-emerald-500 text-white p-8 rounded-t-lg md:rounded-l-lg md:rounded-tr-none">
+          <div className="w-full md:w-1/3 bg-red-500 text-white p-8 rounded-t-lg md:rounded-l-lg md:rounded-tr-none">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-semibold mb-4">Nova Receita</DialogTitle>
+              <DialogTitle className="text-2xl font-semibold mb-4">Nova Despesa</DialogTitle>
               <p className="text-sm opacity-90">
-                Registre suas entradas financeiras de forma simples e organizada
+                Registre suas saídas financeiras de forma simples e organizada
               </p>
             </DialogHeader>
             <div className="mt-8">
@@ -135,7 +135,7 @@ const IncomeDialog = () => {
                   <div>
                     <p className="text-sm font-medium text-[#1A1F2C]">Dica</p>
                     <p className="text-xs text-[#1A1F2C] mt-1">
-                      Para um melhor controle financeiro, selecione se é uma receita atual ou futura e preencha todos os dados do cliente ao cadastrar um novo.
+                      Para um melhor controle financeiro, selecione se é uma despesa atual ou futura. Lembre-se que tudo que sai da sua empresa, sai para um fornecedor (ex: pagou um Uber, UBER é fornecedor).
                     </p>
                   </div>
                 </div>
@@ -146,12 +146,12 @@ const IncomeDialog = () => {
           <div className="w-full md:w-2/3 p-8">
             <div className="flex justify-center mb-6">
               <div className="flex items-center gap-4 bg-slate-100 p-2 rounded-lg">
-                <span className={`text-sm ${!isFutureRevenue ? 'font-medium' : ''}`}>Receita Atual</span>
+                <span className={`text-sm ${!isFutureExpense ? 'font-medium' : ''}`}>Despesa Atual</span>
                 <Switch
-                  checked={isFutureRevenue}
-                  onCheckedChange={setIsFutureRevenue}
+                  checked={isFutureExpense}
+                  onCheckedChange={setIsFutureExpense}
                 />
-                <span className={`text-sm ${isFutureRevenue ? 'font-medium' : ''}`}>Receita Futura</span>
+                <span className={`text-sm ${isFutureExpense ? 'font-medium' : ''}`}>Despesa Futura</span>
               </div>
             </div>
 
@@ -180,12 +180,16 @@ const IncomeDialog = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="products">Venda de Produtos</SelectItem>
-                      <SelectItem value="services">Prestação de Serviços</SelectItem>
-                      <SelectItem value="clients">Recebimento de Clientes</SelectItem>
-                      <SelectItem value="investments">Investimentos / Aplicações</SelectItem>
-                      <SelectItem value="partners">Aportes dos Sócios</SelectItem>
-                      <SelectItem value="loans">Empréstimos Recebidos</SelectItem>
+                      <SelectItem value="fixed">Custos Fixos</SelectItem>
+                      <SelectItem value="variable">Custos Variáveis</SelectItem>
+                      <SelectItem value="supplies">Insumos e Matéria-prima</SelectItem>
+                      <SelectItem value="services">Serviços Terceiros</SelectItem>
+                      <SelectItem value="taxes">Impostos e Tributos</SelectItem>
+                      <SelectItem value="staff">Folha de Pagamento</SelectItem>
+                      <SelectItem value="rent">Aluguel</SelectItem>
+                      <SelectItem value="marketing">Marketing e Vendas</SelectItem>
+                      <SelectItem value="utilities">Água, Luz e Internet</SelectItem>
+                      <SelectItem value="maintenance">Manutenção</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -268,17 +272,17 @@ const IncomeDialog = () => {
               )}
               
               <div className="md:col-span-2 space-y-2">
-                <Label htmlFor="client" className="text-sm font-medium">Cliente</Label>
+                <Label htmlFor="supplier" className="text-sm font-medium">Fornecedor</Label>
                 <div className="flex gap-2">
-                  <Select value={selectedClient} onValueChange={setSelectedClient}>
+                  <Select value={selectedSupplier} onValueChange={setSelectedSupplier}>
                     <SelectTrigger className="w-full border-slate-200">
-                      <SelectValue placeholder="Selecione um cliente" />
+                      <SelectValue placeholder="Selecione um fornecedor" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {clients.map((client) => (
-                          <SelectItem key={client.id} value={client.id}>
-                            {client.name}
+                        {suppliers.map((supplier) => (
+                          <SelectItem key={supplier.id} value={supplier.id}>
+                            {supplier.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -289,15 +293,15 @@ const IncomeDialog = () => {
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="shrink-0">
                         <UserPlus className="h-4 w-4 mr-2" />
-                        Novo Cliente
+                        Novo Fornecedor
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80 p-4">
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <h4 className="font-medium leading-none text-lg">Novo Cliente</h4>
+                          <h4 className="font-medium leading-none text-lg">Novo Fornecedor</h4>
                           <p className="text-sm text-muted-foreground">
-                            Preencha os dados do novo cliente
+                            Preencha os dados do novo fornecedor
                           </p>
                         </div>
                         <div className="space-y-4">
@@ -305,18 +309,18 @@ const IncomeDialog = () => {
                             <Label htmlFor="name">Nome</Label>
                             <Input
                               id="name"
-                              value={newClient.name}
-                              onChange={(e) => setNewClient({...newClient, name: e.target.value})}
+                              value={newSupplier.name}
+                              onChange={(e) => setNewSupplier({...newSupplier, name: e.target.value})}
                               className="mt-1"
                             />
                           </div>
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <Label htmlFor="cpf">CPF</Label>
+                              <Label htmlFor="cnpj">CNPJ</Label>
                               <Input
-                                id="cpf"
-                                value={newClient.cpf}
-                                onChange={(e) => setNewClient({...newClient, cpf: e.target.value})}
+                                id="cnpj"
+                                value={newSupplier.cnpj}
+                                onChange={(e) => setNewSupplier({...newSupplier, cnpj: e.target.value})}
                                 className="mt-1"
                               />
                             </div>
@@ -324,8 +328,8 @@ const IncomeDialog = () => {
                               <Label htmlFor="phone">Telefone</Label>
                               <Input
                                 id="phone"
-                                value={newClient.phone}
-                                onChange={(e) => setNewClient({...newClient, phone: e.target.value})}
+                                value={newSupplier.phone}
+                                onChange={(e) => setNewSupplier({...newSupplier, phone: e.target.value})}
                                 className="mt-1"
                               />
                             </div>
@@ -334,8 +338,8 @@ const IncomeDialog = () => {
                             <Label htmlFor="address">Endereço</Label>
                             <Input
                               id="address"
-                              value={newClient.address}
-                              onChange={(e) => setNewClient({...newClient, address: e.target.value})}
+                              value={newSupplier.address}
+                              onChange={(e) => setNewSupplier({...newSupplier, address: e.target.value})}
                               className="mt-1"
                             />
                           </div>
@@ -343,13 +347,13 @@ const IncomeDialog = () => {
                             <Label htmlFor="additionalInfo">Informações Adicionais</Label>
                             <Input
                               id="additionalInfo"
-                              value={newClient.additionalInfo}
-                              onChange={(e) => setNewClient({...newClient, additionalInfo: e.target.value})}
+                              value={newSupplier.additionalInfo}
+                              onChange={(e) => setNewSupplier({...newSupplier, additionalInfo: e.target.value})}
                               className="mt-1"
                             />
                           </div>
-                          <Button onClick={handleAddClient} className="w-full">
-                            Adicionar Cliente
+                          <Button onClick={handleAddSupplier} className="w-full">
+                            Adicionar Fornecedor
                           </Button>
                         </div>
                       </div>
@@ -362,7 +366,7 @@ const IncomeDialog = () => {
             <div className="flex justify-end mt-8">
               <Button 
                 onClick={handleLaunch}
-                className="bg-emerald-500 hover:bg-emerald-600 h-12 px-8 text-lg"
+                className="bg-red-500 hover:bg-red-600 h-12 px-8 text-lg"
               >
                 Lançar
               </Button>
@@ -374,4 +378,4 @@ const IncomeDialog = () => {
   );
 };
 
-export { IncomeDialog };
+export { ExpenseDialog };
