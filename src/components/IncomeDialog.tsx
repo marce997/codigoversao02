@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, UserPlus, X, Info, Zap, CreditCard, Banknote, Cash } from "lucide-react";
+import { Plus, UserPlus, X, Info, Zap, CreditCard, Banknote, DollarSign } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
   Popover,
@@ -38,7 +37,7 @@ interface Client {
   additionalInfo: string;
 }
 
-export function IncomeDialog() {
+const IncomeDialog = () => {
   const [selectedClient, setSelectedClient] = useState<string>("");
   const [isFutureRevenue, setIsFutureRevenue] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -49,7 +48,6 @@ export function IncomeDialog() {
     { id: "2", name: "Cristina", cpf: "", phone: "", address: "", additionalInfo: "" },
   ]);
 
-  // New client form state
   const [newClient, setNewClient] = useState<Omit<Client, "id">>({
     name: "",
     cpf: "",
@@ -79,7 +77,6 @@ export function IncomeDialog() {
 
   const handleLaunch = () => {
     toast.success("Receita lançada com sucesso!");
-    // Here you would typically save the data
   };
 
   const formatCurrency = (value: string) => {
@@ -185,7 +182,7 @@ export function IncomeDialog() {
                       </SelectItem>
                       <SelectItem value="cash">
                         <div className="flex items-center gap-2">
-                          <Cash className="h-4 w-4" />
+                          <DollarSign className="h-4 w-4" />
                           <span>Dinheiro</span>
                         </div>
                       </SelectItem>
@@ -317,4 +314,6 @@ export function IncomeDialog() {
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export { IncomeDialog };
