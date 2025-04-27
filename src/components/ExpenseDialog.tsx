@@ -5,7 +5,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -50,8 +49,8 @@ const ExpenseDialog = () => {
   const [recurrenceStartDate, setRecurrenceStartDate] = useState<string>("");
   const [recurrenceEndDate, setRecurrenceEndDate] = useState<string>("");
   const [suppliers, setSuppliers] = useState<Supplier[]>([
-    { id: "1", name: "Uber", cnpj: "", phone: "", address: "", additionalInfo: "" },
-    { id: "2", name: "Fornecedor XYZ", cnpj: "", phone: "", address: "", additionalInfo: "" },
+    { id: "1", name: "Fornecedor 1", cnpj: "", phone: "", address: "", additionalInfo: "" },
+    { id: "2", name: "Fornecedor 2", cnpj: "", phone: "", address: "", additionalInfo: "" },
   ]);
 
   const [newSupplier, setNewSupplier] = useState<Omit<Supplier, "id">>({
@@ -138,13 +137,23 @@ const ExpenseDialog = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="w-full h-32 bg-red-500 hover:bg-red-600 p-6 flex flex-col items-center gap-2">
-          <Minus className="h-8 w-8" />
-          <div className="flex flex-col items-center">
-            <span className="text-xl font-medium">Despesa</span>
-            <span className="text-sm opacity-90">Registrar saída</span>
+        <button
+          className="action-button glass-morphism relative group overflow-hidden rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all w-full"
+          type="button"
+        >
+          <div className="absolute inset-0 expense-gradient opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative flex items-center space-x-6">
+            <div className="flex-shrink-0">
+              <div className="w-20 h-20 rounded-2xl bg-red-50 flex items-center justify-center shadow-inner">
+                <Minus className="w-10 h-10 text-red-600" />
+              </div>
+            </div>
+            <div className="flex-1 text-left">
+              <h2 className="text-3xl font-medium text-gray-900 group-hover:text-white transition-colors mb-2">Despesa</h2>
+              <p className="text-gray-500 group-hover:text-white/90 transition-colors">Registrar saída</p>
+            </div>
           </div>
-        </Button>
+        </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] p-0 gap-0">
         <div className="flex flex-col md:flex-row">
@@ -156,38 +165,35 @@ const ExpenseDialog = () => {
               </p>
             </DialogHeader>
             <div className="mt-8">
-              <Card className="bg-[#F2FFE8] border-white/20 p-4 rounded-lg">
+              <Card className="bg-[#FFEBEE] border-white/20 p-4 rounded-lg">
                 <div className="flex items-start gap-2">
                   <Info className="h-4 w-4 mt-0.5 shrink-0 text-[#1A1F2C]" />
                   <div>
                     <p className="text-sm font-medium text-[#1A1F2C]">Dica</p>
                     <p className="text-xs text-[#1A1F2C] mt-1">
-                      Para um melhor controle financeiro, selecione se é uma despesa atual ou futura. Lembre-se que tudo que sai da sua empresa, sai para um fornecedor (ex: pagou um Uber, UBER é fornecedor).
+                      Para um melhor controle financeiro, selecione se é uma despesa atual ou futura e preencha todos os dados do fornecedor ao cadastrar um novo.
                     </p>
                   </div>
                 </div>
               </Card>
             </div>
           </div>
-          
           <div className="w-full md:w-2/3 p-8">
             <div className="flex justify-center mb-6">
               <div className="flex items-center gap-4 bg-slate-100 p-2 rounded-lg">
-                <span className={`text-sm ${!isFutureExpense ? 'font-medium' : ''}`}>Despesa Atual</span>
+                <span className={`text-sm px-3 py-1 rounded transition-colors ${!isFutureExpense ? 'bg-red-100 font-medium' : ''}`}>Despesa Atual</span>
                 <Switch
                   checked={isFutureExpense}
                   onCheckedChange={setIsFutureExpense}
                 />
-                <span className={`text-sm ${isFutureExpense ? 'font-medium' : ''}`}>Despesa Futura</span>
+                <span className={`text-sm px-3 py-1 rounded transition-colors ${isFutureExpense ? 'bg-purple-100 font-medium' : ''}`}>Despesa Futura</span>
               </div>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="date" className="text-sm font-medium">Data</Label>
                 <Input id="date" type="date" className="border-slate-200" />
               </div>
-              
               <div className="space-y-2">
                 <Label htmlFor="amount" className="text-sm font-medium">Valor Total</Label>
                 <Input
@@ -198,7 +204,6 @@ const ExpenseDialog = () => {
                   className="border-slate-200"
                 />
               </div>
-              
               <div className="space-y-2">
                 <Label htmlFor="category" className="text-sm font-medium">Categoria</Label>
                 <Select value={category} onValueChange={setCategory}>
@@ -207,100 +212,16 @@ const ExpenseDialog = () => {
                   </SelectTrigger>
                   <SelectContent position="popper" className="max-h-[300px] overflow-y-auto">
                     <SelectGroup>
-                      <SelectItem value="fixed">Custos Fixos</SelectItem>
-                      <SelectItem value="variable">Custos Variáveis</SelectItem>
-                      <SelectItem value="supplies">Insumos e Matéria-prima</SelectItem>
-                      <SelectItem value="services">Serviços Terceiros</SelectItem>
-                      <SelectItem value="taxes">Impostos e Tributos</SelectItem>
-                      <SelectItem value="staff">Folha de Pagamento</SelectItem>
-                      <SelectItem value="rent">Aluguel</SelectItem>
-                      <SelectItem value="marketing">Marketing e Vendas</SelectItem>
-                      <SelectItem value="utilities">Água, Luz e Internet</SelectItem>
-                      <SelectItem value="maintenance">Manutenção</SelectItem>
+                      <SelectItem value="products">Compra de Produtos</SelectItem>
+                      <SelectItem value="services">Contratação de Serviços</SelectItem>
+                      <SelectItem value="suppliers">Pagamento a Fornecedores</SelectItem>
+                      <SelectItem value="investments">Investimentos / Aplicações</SelectItem>
+                      <SelectItem value="partners">Retirada dos Sócios</SelectItem>
+                      <SelectItem value="loans">Empréstimos Concedidos</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               </div>
-
-              {category === "fixed" && (
-                <div className="md:col-span-2 space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="recurrence" className="text-sm font-medium">Recorrência</Label>
-                    <Select value={recurrenceType} onValueChange={setRecurrenceType}>
-                      <SelectTrigger className="w-full border-slate-200">
-                        <SelectValue placeholder="Selecione a recorrência" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        <SelectGroup>
-                          <SelectItem value="daily">Diária</SelectItem>
-                          <SelectItem value="weekly">Semanal</SelectItem>
-                          <SelectItem value="monthly">Mensal</SelectItem>
-                          <SelectItem value="yearly">Anual</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {recurrenceType && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="recurrenceDay" className="text-sm font-medium">
-                          {recurrenceType === "monthly" ? "Dia do mês" : 
-                           recurrenceType === "yearly" ? "Dia do ano" : 
-                           recurrenceType === "weekly" ? "Dia da semana" : "Dia"}
-                        </Label>
-                        <Select value={recurrenceDay.toString()} onValueChange={(value) => setRecurrenceDay(Number(value))}>
-                          <SelectTrigger className="w-full border-slate-200">
-                            <SelectValue placeholder="Selecione o dia" />
-                          </SelectTrigger>
-                          <SelectContent position="popper">
-                            <SelectGroup>
-                              {recurrenceType === "weekly" ? (
-                                <>
-                                  <SelectItem value="1">Segunda-feira</SelectItem>
-                                  <SelectItem value="2">Terça-feira</SelectItem>
-                                  <SelectItem value="3">Quarta-feira</SelectItem>
-                                  <SelectItem value="4">Quinta-feira</SelectItem>
-                                  <SelectItem value="5">Sexta-feira</SelectItem>
-                                  <SelectItem value="6">Sábado</SelectItem>
-                                  <SelectItem value="0">Domingo</SelectItem>
-                                </>
-                              ) : (
-                                Array.from({length: recurrenceType === "monthly" ? 31 : 365}, (_, i) => i + 1).map((day) => (
-                                  <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
-                                ))
-                              )}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="recurrenceStartDate" className="text-sm font-medium">Data de Início</Label>
-                        <Input
-                          id="recurrenceStartDate"
-                          type="date"
-                          value={recurrenceStartDate}
-                          onChange={(e) => setRecurrenceStartDate(e.target.value)}
-                          className="border-slate-200"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="recurrenceEndDate" className="text-sm font-medium">Data de Término</Label>
-                        <Input
-                          id="recurrenceEndDate"
-                          type="date"
-                          value={recurrenceEndDate}
-                          onChange={(e) => setRecurrenceEndDate(e.target.value)}
-                          className="border-slate-200"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="payment" className="text-sm font-medium">Forma de Pagamento</Label>
                 <Select value={paymentMethod} onValueChange={setPaymentMethod}>
@@ -343,7 +264,6 @@ const ExpenseDialog = () => {
                   </SelectContent>
                 </Select>
               </div>
-
               {paymentMethod === "credit" && (
                 <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -360,7 +280,6 @@ const ExpenseDialog = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  
                   {installments > 1 && (
                     <div className="space-y-2">
                       <Label htmlFor="installmentValue" className="text-sm font-medium">Valor da Parcela</Label>
@@ -375,7 +294,6 @@ const ExpenseDialog = () => {
                   )}
                 </div>
               )}
-              
               <div className="md:col-span-2 space-y-2">
                 <Label htmlFor="supplier" className="text-sm font-medium">Fornecedor</Label>
                 <div className="flex gap-2">
@@ -383,7 +301,7 @@ const ExpenseDialog = () => {
                     <SelectTrigger className="w-full border-slate-200">
                       <SelectValue placeholder="Selecione um fornecedor" />
                     </SelectTrigger>
-                    <SelectContent position="popper">
+                    <SelectContent className="max-h-[300px]">
                       <SelectGroup>
                         {suppliers.map((supplier) => (
                           <SelectItem key={supplier.id} value={supplier.id}>
@@ -393,7 +311,6 @@ const ExpenseDialog = () => {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline" className="shrink-0">
@@ -456,17 +373,16 @@ const ExpenseDialog = () => {
                           </div>
                         </div>
                       </div>
-                      <DialogFooter>
+                      <div className="flex justify-end">
                         <Button onClick={handleAddSupplier} className="w-full">
                           Adicionar Fornecedor
                         </Button>
-                      </DialogFooter>
+                      </div>
                     </DialogContent>
                   </Dialog>
                 </div>
               </div>
             </div>
-            
             <div className="flex justify-end mt-8">
               <Button 
                 onClick={handleLaunch}
@@ -482,4 +398,4 @@ const ExpenseDialog = () => {
   );
 };
 
-export { ExpenseDialog };
+export default ExpenseDialog;

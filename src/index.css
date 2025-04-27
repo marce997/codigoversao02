@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -96,6 +96,24 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#f0f7ff] text-foreground;
+  }
+}
+
+@layer components {
+  .glass-morphism {
+    @apply bg-white/30 backdrop-blur-lg border border-white/20;
+  }
+
+  .income-gradient {
+    @apply bg-gradient-to-r from-emerald-500/90 to-emerald-600/90;
+  }
+
+  .expense-gradient {
+    @apply bg-gradient-to-r from-red-500/90 to-red-600/90;
+  }
+
+  .action-button {
+    @apply transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
   }
 }

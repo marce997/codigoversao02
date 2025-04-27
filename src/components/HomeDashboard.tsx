@@ -1,69 +1,107 @@
-import { IncomeDialog } from "@/components/IncomeDialog";
-import { ExpenseDialog } from "@/components/ExpenseDialog";
-import { Button } from "@/components/ui/button";
-import { User } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Plus, Minus, PieChart, History, ListChecks, Building2, User } from 'lucide-react';
+import IncomeDialog from '@/components/IncomeDialog';
+import ExpenseDialog from '@/components/ExpenseDialog';
 import "./HomeDashboard.css";
 
 const HomeDashboard = () => {
+  const [isCompany, setIsCompany] = useState(false);
+
+  useEffect(() => {
+    document.body.setAttribute('data-mode', isCompany ? 'company' : 'personal');
+  }, [isCompany]);
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden animated-bg">
-      {/* Botão Pessoa Física */}
-      <div className="absolute top-8 right-8 z-10">
-        <Button variant="outline" className="rounded-full px-6 py-2 flex items-center gap-2 bg-white shadow-md">
-          <User className="h-5 w-5 text-emerald-600" />
-          Pessoa Física
-        </Button>
-      </div>
-      {/* Título */}
-      <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2 text-center">Finanças Pessoais</h1>
-      <p className="text-lg text-slate-500 mb-10 text-center">Controle simples e intuitivo</p>
-      {/* Cards principais */}
-      <div className="flex flex-col md:flex-row gap-8 mb-8">
-        <div className="card-animated group bg-white rounded-2xl shadow-lg p-8 flex items-center gap-6 min-w-[320px] transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-          <div className="bg-emerald-50 rounded-xl p-4 flex items-center justify-center transition-colors duration-300 group-hover:bg-emerald-100">
-            <span className="text-emerald-500 text-4xl font-bold">+</span>
-          </div>
-          <div>
-            <IncomeDialog />
-            <span className="block text-2xl font-semibold text-slate-900">Receita</span>
-            <span className="block text-slate-500">Registrar entrada</span>
-          </div>
+    <div className="min-h-screen p-6 md:p-8">
+      <header className="mb-12 relative">
+        <div className="absolute right-0 top-0">
+          <button
+            onClick={() => setIsCompany(!isCompany)}
+            className="glass-morphism rounded-full p-2 pr-4 flex items-center space-x-2 hover:shadow-lg transition-all"
+          >
+            <div className="relative w-14 h-8 rounded-full bg-gray-200 transition-colors duration-300">
+              <div
+                className={`absolute top-1 left-1 w-6 h-6 rounded-full transition-transform duration-300 shadow-sm flex items-center justify-center ${
+                  isCompany ? 'translate-x-6 bg-blue-400' : 'translate-x-0 bg-emerald-400'
+                }`}
+              >
+                {isCompany ? (
+                  <Building2 className="w-3 h-3 text-white" />
+                ) : (
+                  <User className="w-3 h-3 text-white" />
+                )}
+              </div>
+            </div>
+            <span className="text-sm font-medium text-gray-700">
+              {isCompany ? 'Pessoa Jurídica' : 'Pessoa Física'}
+            </span>
+          </button>
         </div>
-        <div className="card-animated group bg-white rounded-2xl shadow-lg p-8 flex items-center gap-6 min-w-[320px] transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-          <div className="bg-red-50 rounded-xl p-4 flex items-center justify-center transition-colors duration-300 group-hover:bg-red-100">
-            <span className="text-red-500 text-4xl font-bold">-</span>
-          </div>
-          <div>
-            <ExpenseDialog />
-            <span className="block text-2xl font-semibold text-slate-900">Despesa</span>
-            <span className="block text-slate-500">Registrar saída</span>
-          </div>
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-4xl font-medium text-gray-900 mb-2">
+            {isCompany ? 'Finanças Empresariais' : 'Finanças Pessoais'}
+          </h1>
+          <p className="text-gray-500">Controle simples e intuitivo</p>
         </div>
-      </div>
-      {/* Cards secundários */}
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="card-animated bg-white rounded-2xl shadow p-8 flex flex-col items-center min-w-[220px] transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-          <span className="text-purple-500 text-3xl mb-2">📈</span>
-          <span className="text-xl font-semibold text-slate-900">Relatórios</span>
-          <span className="text-slate-500 text-center">Visualize seus dados</span>
+      </header>
+      <main className="max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <IncomeDialog />
+          <ExpenseDialog />
         </div>
-        <div className="card-animated bg-white rounded-2xl shadow p-8 flex flex-col items-center min-w-[220px] transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-          <span className="text-orange-400 text-3xl mb-2">⏪</span>
-          <span className="text-xl font-semibold text-slate-900">Histórico</span>
-          <span className="text-slate-500 text-center">Veja transações passadas</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <QuickAction
+            icon={<PieChart strokeWidth={1.5} />}
+            label="Relatórios"
+            description="Visualize seus dados"
+            color="purple"
+          />
+          <QuickAction
+            icon={<History strokeWidth={1.5} />}
+            label="Histórico"
+            description="Veja transações passadas"
+            color="amber"
+          />
+          <QuickAction
+            icon={<ListChecks strokeWidth={1.5} />}
+            label="Lista de Tarefas"
+            description="Organize suas atividades"
+            color="teal"
+          />
         </div>
-        <div className="card-animated bg-white rounded-2xl shadow p-8 flex flex-col items-center min-w-[220px] transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-          <span className="text-teal-500 text-3xl mb-2">✅</span>
-          <span className="text-xl font-semibold text-slate-900">Categorias</span>
-          <span className="text-slate-500 text-center">Gerencie seus grupos</span>
-        </div>
-      </div>
-      {/* Fundo animado */}
-      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-        <div className="bg-gradient-to-br from-[#e0e7ff] via-[#f4f8fc] to-[#c1f7fa] animate-gradient-move w-full h-full absolute opacity-80" />
-      </div>
+      </main>
     </div>
   );
 };
 
-export { HomeDashboard }; 
+const QuickAction: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  description: string;
+  color: 'purple' | 'amber' | 'teal';
+}> = ({ icon, label, description, color }) => {
+  const colorClasses = {
+    purple: 'bg-white text-purple-600 hover:bg-purple-100',
+    amber: 'bg-white text-amber-600 hover:bg-amber-100',
+    teal: 'bg-white text-teal-600 hover:bg-teal-100'
+  };
+
+  return (
+    <button
+      className={`${colorClasses[color]} p-6 rounded-2xl hover:shadow-lg transition-all`}
+      type="button"
+    >
+      <div className="flex items-center space-x-4">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-white">
+          {icon}
+        </div>
+        <div className="text-left">
+          <h3 className="text-lg font-medium text-gray-900">{label}</h3>
+          <p className="text-sm text-gray-500">{description}</p>
+        </div>
+      </div>
+    </button>
+  );
+};
+
+export default HomeDashboard; 
