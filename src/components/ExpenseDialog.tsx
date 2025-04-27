@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -6,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -45,6 +45,10 @@ const ExpenseDialog = () => {
   const [installmentValue, setInstallmentValue] = useState<string>("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
+  const [recurrenceType, setRecurrenceType] = useState<string>("");
+  const [recurrenceDay, setRecurrenceDay] = useState<number>(1);
+  const [recurrenceStartDate, setRecurrenceStartDate] = useState<string>("");
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState<string>("");
   const [suppliers, setSuppliers] = useState<Supplier[]>([
     { id: "1", name: "Uber", cnpj: "", phone: "", address: "", additionalInfo: "" },
     { id: "2", name: "Fornecedor XYZ", cnpj: "", phone: "", address: "", additionalInfo: "" },
@@ -90,11 +94,26 @@ const ExpenseDialog = () => {
         additionalInfo: "",
       });
       setIsPopoverOpen(false);
+      toast.success("Fornecedor adicionado com sucesso!");
     }
   };
 
   const handleLaunch = () => {
-    toast.success("Despesa lançada com sucesso!");
+    if (category === "fixed" && recurrenceType) {
+      const message = `Despesa fixa programada com sucesso! 
+        Recorrência: ${recurrenceType === "daily" ? "Diária" : 
+                     recurrenceType === "weekly" ? "Semanal" : 
+                     recurrenceType === "monthly" ? "Mensal" : "Anual"}
+        Dia: ${recurrenceType === "weekly" ? 
+          ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"][recurrenceDay] : 
+          recurrenceDay}
+        Início: ${new Date(recurrenceStartDate).toLocaleDateString()}
+        Término: ${recurrenceEndDate ? new Date(recurrenceEndDate).toLocaleDateString() : "Indeterminado"}`;
+      
+      toast.success(message);
+    } else {
+      toast.success("Despesa lançada com sucesso!");
+    }
   };
 
   const formatCurrency = (value: string) => {
@@ -203,6 +222,85 @@ const ExpenseDialog = () => {
                 </Select>
               </div>
 
+              {category === "fixed" && (
+                <div className="md:col-span-2 space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="recurrence" className="text-sm font-medium">Recorrência</Label>
+                    <Select value={recurrenceType} onValueChange={setRecurrenceType}>
+                      <SelectTrigger className="w-full border-slate-200">
+                        <SelectValue placeholder="Selecione a recorrência" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        <SelectGroup>
+                          <SelectItem value="daily">Diária</SelectItem>
+                          <SelectItem value="weekly">Semanal</SelectItem>
+                          <SelectItem value="monthly">Mensal</SelectItem>
+                          <SelectItem value="yearly">Anual</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {recurrenceType && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="recurrenceDay" className="text-sm font-medium">
+                          {recurrenceType === "monthly" ? "Dia do mês" : 
+                           recurrenceType === "yearly" ? "Dia do ano" : 
+                           recurrenceType === "weekly" ? "Dia da semana" : "Dia"}
+                        </Label>
+                        <Select value={recurrenceDay.toString()} onValueChange={(value) => setRecurrenceDay(Number(value))}>
+                          <SelectTrigger className="w-full border-slate-200">
+                            <SelectValue placeholder="Selecione o dia" />
+                          </SelectTrigger>
+                          <SelectContent position="popper">
+                            <SelectGroup>
+                              {recurrenceType === "weekly" ? (
+                                <>
+                                  <SelectItem value="1">Segunda-feira</SelectItem>
+                                  <SelectItem value="2">Terça-feira</SelectItem>
+                                  <SelectItem value="3">Quarta-feira</SelectItem>
+                                  <SelectItem value="4">Quinta-feira</SelectItem>
+                                  <SelectItem value="5">Sexta-feira</SelectItem>
+                                  <SelectItem value="6">Sábado</SelectItem>
+                                  <SelectItem value="0">Domingo</SelectItem>
+                                </>
+                              ) : (
+                                Array.from({length: recurrenceType === "monthly" ? 31 : 365}, (_, i) => i + 1).map((day) => (
+                                  <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
+                                ))
+                              )}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="recurrenceStartDate" className="text-sm font-medium">Data de Início</Label>
+                        <Input
+                          id="recurrenceStartDate"
+                          type="date"
+                          value={recurrenceStartDate}
+                          onChange={(e) => setRecurrenceStartDate(e.target.value)}
+                          className="border-slate-200"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="recurrenceEndDate" className="text-sm font-medium">Data de Término</Label>
+                        <Input
+                          id="recurrenceEndDate"
+                          type="date"
+                          value={recurrenceEndDate}
+                          onChange={(e) => setRecurrenceEndDate(e.target.value)}
+                          className="border-slate-200"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="payment" className="text-sm font-medium">Forma de Pagamento</Label>
                 <Select value={paymentMethod} onValueChange={setPaymentMethod}>
@@ -296,22 +394,19 @@ const ExpenseDialog = () => {
                     </SelectContent>
                   </Select>
                   
-                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                    <PopoverTrigger asChild>
+                  <Dialog>
+                    <DialogTrigger asChild>
                       <Button variant="outline" className="shrink-0">
                         <UserPlus className="h-4 w-4 mr-2" />
                         Novo Fornecedor
                       </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-96 p-4" align="center" side="bottom">
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <h4 className="font-medium leading-none text-lg">Novo Fornecedor</h4>
-                          <p className="text-sm text-muted-foreground">
-                            Preencha os dados do novo fornecedor
-                          </p>
-                        </div>
-                        <div className="space-y-4">
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Novo Fornecedor</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-4">
                           <div>
                             <Label htmlFor="name">Nome</Label>
                             <Input
@@ -359,13 +454,15 @@ const ExpenseDialog = () => {
                               className="mt-1"
                             />
                           </div>
-                          <Button onClick={handleAddSupplier} className="w-full">
-                            Adicionar Fornecedor
-                          </Button>
                         </div>
                       </div>
-                    </PopoverContent>
-                  </Popover>
+                      <DialogFooter>
+                        <Button onClick={handleAddSupplier} className="w-full">
+                          Adicionar Fornecedor
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </div>

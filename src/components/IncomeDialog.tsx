@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -88,6 +89,7 @@ const IncomeDialog = () => {
         additionalInfo: "",
       });
       setIsPopoverOpen(false);
+      toast.success("Cliente adicionado com sucesso!");
     }
   };
 
