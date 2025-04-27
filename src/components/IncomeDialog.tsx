@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -17,29 +18,82 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, UserPlus } from "lucide-react";
+import { Plus, UserPlus, X, Info, Zap, CreditCard, Banknote, Cash } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
+import { toast } from "sonner";
+
+interface Client {
+  id: string;
+  name: string;
+  cpf: string;
+  phone: string;
+  address: string;
+  additionalInfo: string;
+}
 
 export function IncomeDialog() {
   const [selectedClient, setSelectedClient] = useState<string>("");
-  const [newClientName, setNewClientName] = useState("");
-  const [clients, setClients] = useState([
-    "Marcelo",
-    "Cristina",
+  const [isFutureRevenue, setIsFutureRevenue] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [installments, setInstallments] = useState<number>(1);
+  const [amount, setAmount] = useState("");
+  const [clients, setClients] = useState<Client[]>([
+    { id: "1", name: "Marcelo", cpf: "", phone: "", address: "", additionalInfo: "" },
+    { id: "2", name: "Cristina", cpf: "", phone: "", address: "", additionalInfo: "" },
   ]);
 
+  // New client form state
+  const [newClient, setNewClient] = useState<Omit<Client, "id">>({
+    name: "",
+    cpf: "",
+    phone: "",
+    address: "",
+    additionalInfo: "",
+  });
+
   const handleAddClient = () => {
-    if (newClientName.trim()) {
-      setClients([...clients, newClientName.trim()]);
-      setSelectedClient(newClientName.trim());
-      setNewClientName("");
+    if (newClient.name.trim()) {
+      const newId = (clients.length + 1).toString();
+      const clientToAdd = {
+        id: newId,
+        ...newClient
+      };
+      setClients([...clients, clientToAdd]);
+      setSelectedClient(newId);
+      setNewClient({
+        name: "",
+        cpf: "",
+        phone: "",
+        address: "",
+        additionalInfo: "",
+      });
     }
+  };
+
+  const handleLaunch = () => {
+    toast.success("Receita lançada com sucesso!");
+    // Here you would typically save the data
+  };
+
+  const formatCurrency = (value: string) => {
+    const onlyNumbers = value.replace(/\D/g, "");
+    const numberFormat = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+    return numberFormat.format(Number(onlyNumbers) / 100);
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "");
+    setAmount(value ? formatCurrency(value) : "");
   };
 
   return (
@@ -54,6 +108,9 @@ export function IncomeDialog() {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] p-0 gap-0">
+        <DialogClose className="absolute left-4 top-4 rounded-full p-2 opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <X className="h-4 w-4" />
+        </DialogClose>
         <div className="flex">
           <div className="w-1/3 bg-emerald-500 text-white p-8 rounded-l-lg">
             <DialogHeader>
@@ -64,48 +121,106 @@ export function IncomeDialog() {
             </DialogHeader>
             <div className="mt-8">
               <Card className="bg-white/10 border-white/20 p-4 rounded-lg">
-                <p className="text-sm font-medium">Dica</p>
-                <p className="text-xs opacity-80 mt-1">
-                  Categorizar suas receitas ajuda a ter um melhor controle financeiro
-                </p>
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium">Dica</p>
+                    <p className="text-xs opacity-80 mt-1">
+                      Para um melhor controle financeiro, selecione se é uma receita atual ou futura e preencha todos os dados do cliente ao cadastrar um novo.
+                    </p>
+                  </div>
+                </div>
               </Card>
             </div>
           </div>
           
           <div className="w-2/3 p-8">
+            <div className="flex justify-center mb-6">
+              <div className="flex items-center gap-4 bg-slate-100 p-2 rounded-lg">
+                <span className={`text-sm ${!isFutureRevenue ? 'font-medium' : ''}`}>Receita Atual</span>
+                <Switch
+                  checked={isFutureRevenue}
+                  onCheckedChange={setIsFutureRevenue}
+                />
+                <span className={`text-sm ${isFutureRevenue ? 'font-medium' : ''}`}>Receita Futura</span>
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="date" className="text-sm font-medium">
-                  Data
-                </Label>
+                <Label htmlFor="date" className="text-sm font-medium">Data</Label>
                 <Input id="date" type="date" className="border-slate-200" />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="category" className="text-sm font-medium">
-                  Categoria
-                </Label>
-                <Input id="category" className="border-slate-200" />
+                <Label htmlFor="amount" className="text-sm font-medium">Valor Total</Label>
+                <Input
+                  id="amount"
+                  value={amount}
+                  onChange={handleAmountChange}
+                  placeholder="R$ 0,00"
+                  className="border-slate-200"
+                />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="payment" className="text-sm font-medium">
-                  Forma de Pagamento
-                </Label>
-                <Input id="payment" className="border-slate-200" />
+                <Label htmlFor="payment" className="text-sm font-medium">Forma de Pagamento</Label>
+                <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                  <SelectTrigger className="w-full border-slate-200">
+                    <SelectValue placeholder="Selecione o método" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="pix">
+                        <div className="flex items-center gap-2">
+                          <Zap className="h-4 w-4" />
+                          <span>Pix</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="credit">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="h-4 w-4" />
+                          <span>Cartão</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="cash">
+                        <div className="flex items-center gap-2">
+                          <Cash className="h-4 w-4" />
+                          <span>Dinheiro</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="boleto">
+                        <div className="flex items-center gap-2">
+                          <Banknote className="h-4 w-4" />
+                          <span>Boleto</span>
+                        </div>
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="amount" className="text-sm font-medium">
-                  Valor Total
-                </Label>
-                <Input id="amount" type="number" className="border-slate-200" />
-              </div>
+
+              {paymentMethod === "credit" && (
+                <div className="space-y-2">
+                  <Label htmlFor="installments" className="text-sm font-medium">Parcelas</Label>
+                  <Select value={installments.toString()} onValueChange={(value) => setInstallments(Number(value))}>
+                    <SelectTrigger className="w-full border-slate-200">
+                      <SelectValue placeholder="Número de parcelas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="1">À vista</SelectItem>
+                        {[2,3,4,5,6,7,8,9,10,11,12].map((n) => (
+                          <SelectItem key={n} value={n.toString()}>{n}x</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               
               <div className="col-span-2 space-y-2">
-                <Label htmlFor="client" className="text-sm font-medium">
-                  Cliente
-                </Label>
+                <Label htmlFor="client" className="text-sm font-medium">Cliente</Label>
                 <div className="flex gap-2">
                   <Select value={selectedClient} onValueChange={setSelectedClient}>
                     <SelectTrigger className="w-full border-slate-200">
@@ -114,8 +229,8 @@ export function IncomeDialog() {
                     <SelectContent>
                       <SelectGroup>
                         {clients.map((client) => (
-                          <SelectItem key={client} value={client}>
-                            {client}
+                          <SelectItem key={client.id} value={client.id}>
+                            {client.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -129,26 +244,57 @@ export function IncomeDialog() {
                         Novo Cliente
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80">
+                    <PopoverContent className="w-96">
                       <div className="grid gap-4">
                         <div className="space-y-2">
                           <h4 className="font-medium leading-none">Novo Cliente</h4>
                           <p className="text-sm text-muted-foreground">
-                            Adicione um novo cliente à sua lista
+                            Preencha os dados do novo cliente
                           </p>
                         </div>
-                        <div className="grid gap-2">
-                          <div className="grid grid-cols-3 items-center gap-4">
-                            <Label htmlFor="newClient">Nome</Label>
+                        <div className="grid gap-4">
+                          <div className="grid gap-2">
+                            <Label htmlFor="name">Nome</Label>
                             <Input
-                              id="newClient"
-                              value={newClientName}
-                              onChange={(e) => setNewClientName(e.target.value)}
-                              className="col-span-2"
+                              id="name"
+                              value={newClient.name}
+                              onChange={(e) => setNewClient({...newClient, name: e.target.value})}
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="cpf">CPF</Label>
+                            <Input
+                              id="cpf"
+                              value={newClient.cpf}
+                              onChange={(e) => setNewClient({...newClient, cpf: e.target.value})}
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="phone">Telefone</Label>
+                            <Input
+                              id="phone"
+                              value={newClient.phone}
+                              onChange={(e) => setNewClient({...newClient, phone: e.target.value})}
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="address">Endereço</Label>
+                            <Input
+                              id="address"
+                              value={newClient.address}
+                              onChange={(e) => setNewClient({...newClient, address: e.target.value})}
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="additionalInfo">Informações Adicionais</Label>
+                            <Input
+                              id="additionalInfo"
+                              value={newClient.additionalInfo}
+                              onChange={(e) => setNewClient({...newClient, additionalInfo: e.target.value})}
                             />
                           </div>
                         </div>
-                        <Button onClick={handleAddClient}>
+                        <Button onClick={handleAddClient} className="w-full">
                           Adicionar Cliente
                         </Button>
                       </div>
@@ -159,8 +305,11 @@ export function IncomeDialog() {
             </div>
             
             <div className="flex justify-end mt-8">
-              <Button type="submit" className="bg-emerald-500 hover:bg-emerald-600">
-                Salvar
+              <Button 
+                onClick={handleLaunch}
+                className="bg-emerald-500 hover:bg-emerald-600 h-12 px-8 text-lg"
+              >
+                Lançar
               </Button>
             </div>
           </div>
