@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -60,7 +59,6 @@ const IncomeDialog = () => {
   
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  // Calculate installment value whenever amount or installments change
   useEffect(() => {
     if (amount && installments > 0) {
       const numericAmount = parseFloat(amount.replace(/[^\d,]/g, "").replace(",", "."));
@@ -137,7 +135,7 @@ const IncomeDialog = () => {
               </p>
             </DialogHeader>
             <div className="mt-8">
-              <Card className="bg-[#F2FFE8] border-white/20 p-4 rounded-lg">
+              <Card className="bg-[#E8F5E9] border-white/20 p-4 rounded-lg">
                 <div className="flex items-start gap-2">
                   <Info className="h-4 w-4 mt-0.5 shrink-0 text-[#1A1F2C]" />
                   <div>
@@ -154,12 +152,12 @@ const IncomeDialog = () => {
           <div className="w-full md:w-2/3 p-8">
             <div className="flex justify-center mb-6">
               <div className="flex items-center gap-4 bg-slate-100 p-2 rounded-lg">
-                <span className={`text-sm ${!isFutureRevenue ? 'font-medium' : ''}`}>Receita Atual</span>
+                <span className={`text-sm px-3 py-1 rounded transition-colors ${!isFutureRevenue ? 'bg-emerald-100 font-medium' : ''}`}>Receita Atual</span>
                 <Switch
                   checked={isFutureRevenue}
                   onCheckedChange={setIsFutureRevenue}
                 />
-                <span className={`text-sm ${isFutureRevenue ? 'font-medium' : ''}`}>Receita Futura</span>
+                <span className={`text-sm px-3 py-1 rounded transition-colors ${isFutureRevenue ? 'bg-purple-100 font-medium' : ''}`}>Receita Futura</span>
               </div>
             </div>
 
@@ -281,7 +279,7 @@ const IncomeDialog = () => {
                     <SelectTrigger className="w-full border-slate-200">
                       <SelectValue placeholder="Selecione um cliente" />
                     </SelectTrigger>
-                    <SelectContent position="popper">
+                    <SelectContent className="max-h-[300px]">
                       <SelectGroup>
                         {clients.map((client) => (
                           <SelectItem key={client.id} value={client.id}>
@@ -292,22 +290,19 @@ const IncomeDialog = () => {
                     </SelectContent>
                   </Select>
                   
-                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                    <PopoverTrigger asChild>
+                  <Dialog>
+                    <DialogTrigger asChild>
                       <Button variant="outline" className="shrink-0">
                         <UserPlus className="h-4 w-4 mr-2" />
                         Novo Cliente
                       </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-96 p-4" align="center" side="bottom">
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <h4 className="font-medium leading-none text-lg">Novo Cliente</h4>
-                          <p className="text-sm text-muted-foreground">
-                            Preencha os dados do novo cliente
-                          </p>
-                        </div>
-                        <div className="space-y-4">
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Novo Cliente</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-4">
                           <div>
                             <Label htmlFor="name">Nome</Label>
                             <Input
@@ -355,13 +350,15 @@ const IncomeDialog = () => {
                               className="mt-1"
                             />
                           </div>
-                          <Button onClick={handleAddClient} className="w-full">
-                            Adicionar Cliente
-                          </Button>
                         </div>
                       </div>
-                    </PopoverContent>
-                  </Popover>
+                      <DialogFooter>
+                        <Button onClick={handleAddClient} className="w-full">
+                          Adicionar Cliente
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </div>
