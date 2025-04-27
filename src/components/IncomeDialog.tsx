@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -43,6 +44,7 @@ const IncomeDialog = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [installments, setInstallments] = useState<number>(1);
   const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState("");
   const [clients, setClients] = useState<Client[]>([
     { id: "1", name: "Marcelo", cpf: "", phone: "", address: "", additionalInfo: "" },
     { id: "2", name: "Cristina", cpf: "", phone: "", address: "", additionalInfo: "" },
@@ -105,7 +107,7 @@ const IncomeDialog = () => {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] p-0 gap-0">
-        <DialogClose className="absolute left-4 top-4 rounded-full p-2 opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+        <DialogClose className="absolute left-4 top-4 rounded-full p-2 bg-white/20 opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
           <X className="h-4 w-4" />
         </DialogClose>
         <div className="flex">
@@ -117,12 +119,12 @@ const IncomeDialog = () => {
               </p>
             </DialogHeader>
             <div className="mt-8">
-              <Card className="bg-white/10 border-white/20 p-4 rounded-lg">
+              <Card className="bg-[#F2FCE2] border-white/20 p-4 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <Info className="h-4 w-4 mt-0.5 shrink-0" />
+                  <Info className="h-4 w-4 mt-0.5 shrink-0 text-[#1A1F2C]" />
                   <div>
-                    <p className="text-sm font-medium">Dica</p>
-                    <p className="text-xs opacity-80 mt-1">
+                    <p className="text-sm font-medium text-[#1A1F2C]">Dica</p>
+                    <p className="text-xs text-[#1A1F2C] mt-1">
                       Para um melhor controle financeiro, selecione se é uma receita atual ou futura e preencha todos os dados do cliente ao cadastrar um novo.
                     </p>
                   </div>
@@ -160,6 +162,25 @@ const IncomeDialog = () => {
                 />
               </div>
               
+              <div className="space-y-2">
+                <Label htmlFor="category" className="text-sm font-medium">Categoria</Label>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger className="w-full border-slate-200">
+                    <SelectValue placeholder="Selecione a categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="products">Venda de Produtos</SelectItem>
+                      <SelectItem value="services">Prestação de Serviços</SelectItem>
+                      <SelectItem value="clients">Recebimento de Clientes</SelectItem>
+                      <SelectItem value="investments">Investimentos / Aplicações</SelectItem>
+                      <SelectItem value="partners">Aportes dos Sócios</SelectItem>
+                      <SelectItem value="loans">Empréstimos Recebidos</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="payment" className="text-sm font-medium">Forma de Pagamento</Label>
                 <Select value={paymentMethod} onValueChange={setPaymentMethod}>
@@ -241,57 +262,62 @@ const IncomeDialog = () => {
                         Novo Cliente
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-96">
-                      <div className="grid gap-4">
+                    <PopoverContent className="w-96 p-6">
+                      <div className="space-y-4">
                         <div className="space-y-2">
-                          <h4 className="font-medium leading-none">Novo Cliente</h4>
+                          <h4 className="font-medium leading-none text-lg">Novo Cliente</h4>
                           <p className="text-sm text-muted-foreground">
                             Preencha os dados do novo cliente
                           </p>
                         </div>
-                        <div className="grid gap-4">
-                          <div className="grid gap-2">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="col-span-2">
                             <Label htmlFor="name">Nome</Label>
                             <Input
                               id="name"
                               value={newClient.name}
                               onChange={(e) => setNewClient({...newClient, name: e.target.value})}
+                              className="mt-1"
                             />
                           </div>
-                          <div className="grid gap-2">
+                          <div>
                             <Label htmlFor="cpf">CPF</Label>
                             <Input
                               id="cpf"
                               value={newClient.cpf}
                               onChange={(e) => setNewClient({...newClient, cpf: e.target.value})}
+                              className="mt-1"
                             />
                           </div>
-                          <div className="grid gap-2">
+                          <div>
                             <Label htmlFor="phone">Telefone</Label>
                             <Input
                               id="phone"
                               value={newClient.phone}
                               onChange={(e) => setNewClient({...newClient, phone: e.target.value})}
+                              className="mt-1"
                             />
                           </div>
-                          <div className="grid gap-2">
+                          <div className="col-span-2">
                             <Label htmlFor="address">Endereço</Label>
                             <Input
                               id="address"
                               value={newClient.address}
                               onChange={(e) => setNewClient({...newClient, address: e.target.value})}
+                              className="mt-1"
                             />
                           </div>
-                          <div className="grid gap-2">
+                          <div className="col-span-2">
                             <Label htmlFor="additionalInfo">Informações Adicionais</Label>
                             <Input
                               id="additionalInfo"
                               value={newClient.additionalInfo}
                               onChange={(e) => setNewClient({...newClient, additionalInfo: e.target.value})}
+                              className="mt-1"
                             />
                           </div>
                         </div>
-                        <Button onClick={handleAddClient} className="w-full">
+                        <Button onClick={handleAddClient} className="w-full mt-2">
                           Adicionar Cliente
                         </Button>
                       </div>
